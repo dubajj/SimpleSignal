@@ -1,7 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #pragma once
 
-#include <unistd.h>
 #include <assert.h>
 #include <stdint.h>
 #include <functional>
@@ -154,8 +153,7 @@ public:
   /// Operator to remove a signal handler through it connection ID, returns if a handler was removed.
   bool   disconnect (size_t connection)         { return callback_ring_ ? callback_ring_->remove_sibling (connection) : false; }
   /// Emit a signal, i.e. invoke all its callbacks and collect return types with the Collector.
-  CollectorResult
-  emit (Args... args)
+            CollectorResult operator()(Args... args)
   {
     Collector collector;
     if (!callback_ring_)
@@ -174,14 +172,12 @@ public:
         link = old->next;
         link->incref();
         old->decref();
-      }
-    while (link != callback_ring_);
+                } while (link != callback_ring_);
     link->decref();
     return collector.result();
   }
   // Number of connected slots.
-  int
-  size ()
+            int size()
   {
     int size = 0;
     SignalLink *link = callback_ring_;
@@ -196,8 +192,7 @@ public:
         link = old->next;
         link->incref();
         old->decref();
-      }
-    while (link != callback_ring_);
+                } while (link != callback_ring_);
     return size;
   }
 };
